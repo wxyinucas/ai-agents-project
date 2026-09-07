@@ -102,14 +102,33 @@ def test_another_valid_fixture_is_not_hard_coded() -> None:
 
 
 def test_missing_required_column_fails_clearly() -> None:
-    completed = run_market_check(FIXTURES / "missing_close.csv")
+    cases = {
+        "missing_close.csv": "close",
+        "missing_symbol.csv": "symbol",
+        "missing_timestamp.csv": "timestamp",
+    }
 
-    assert completed.returncode != 0
-    assert "DATA_CHECK=FAIL" in completed.stdout + completed.stderr
+    for fixture_name, missing_column in cases.items():
+        completed = run_market_check(FIXTURES / fixture_name)
+        output = (completed.stdout + completed.stderr).lower()
+
+        assert completed.returncode != 0
+        assert "DATA_CHECK=FAIL" in completed.stdout + completed.stderr
+        assert missing_column in output
+        assert any(
+            marker in output
+            for marker in ("missing", "required", "column", "缺少", "缺失", "字段")
+        ), f"失败输出应说明缺少必要字段，实际为：{output!r}"
 
 
 def test_missing_file_fails_clearly(tmp_path: Path) -> None:
-    completed = run_market_check(tmp_path / "does-not-exist.csv")
+    missing_path = tmp_path / "does-not-exist.csv"
+    completed = run_market_check(missing_path)
+    output = (completed.stdout + completed.stderr).lower()
 
     assert completed.returncode != 0
     assert "DATA_CHECK=FAIL" in completed.stdout + completed.stderr
+    assert missing_path.name in output
+    assert any(
+        marker in output for marker in ("not found", "missing", "does not exist", "不存在")
+    ), f"失败输出应说明文件不存在，实际为：{output!r}"
