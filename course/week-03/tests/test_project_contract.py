@@ -7,6 +7,7 @@ import tomllib
 
 
 ROOT = Path.cwd().resolve()
+COURSE_WEEK = Path(__file__).resolve().parents[1]
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
@@ -66,7 +67,7 @@ def test_uv_project_declares_required_environment() -> None:
 
 
 def test_sample_fixture_reports_visible_facts() -> None:
-    completed = run_market_check(ROOT / "data" / "sample_prices.csv")
+    completed = run_market_check(COURSE_WEEK / "data" / "sample_prices.csv")
     facts = parse_key_value_output(completed.stdout)
 
     assert completed.returncode == 0, completed.stdout + completed.stderr
