@@ -28,9 +28,9 @@ code .
 
 - 平时在个人 fork 的 `origin/main` 持续工作。
 - 教师 `upstream/main` 保存最近一次已经接纳的全班汇总状态。
-- W6、W9、W14 等里程碑通过 PR 汇总到 `upstream/main`；每个 PR 只改变一名学生自己的目录。
+- W6、W9、W14 通过 PR 汇总到 `upstream/main`；每个 PR 只改变一名学生自己的目录。
 - 合并保留原提交历史，使用普通 merge，不使用 squash 或 rebase merge。
-- 当期 PR 合并且累计检查完成后，再用 tag 冻结检查点，例如 `checkpoint-w06`、`checkpoint-w09`、`rc-w14`。
+- 当期 PR 合并且累计检查完成后，再分别用 `checkpoint-w06`、`checkpoint-w09`、`rc-w14` tag 冻结检查点。
 - 周次不是并行开发线，因此不建立 `dev-week-n` 分支。
 
 课程会在需要相应能力时再加入公共代码、CI 和平台接口，不预先建立未来功能空壳。
