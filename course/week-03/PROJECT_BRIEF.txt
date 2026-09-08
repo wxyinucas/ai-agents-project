@@ -29,7 +29,7 @@ W3 PROJECT BRIEF
 
    uv run --locked pytest -q ../../../course/week-03/tests
 
-不要修改 course/、common/、根 .gitignore、students/README.md 或其他学生目录。
+不要修改根 README.md、course/、common/、根 .gitignore、students/README.md 或其他学生目录。
 你可以在自己的 system/ 中增加测试，但本周不作要求。
 
 本周只处理本地 fixture。不要联网，不要读取环境变量或凭证，

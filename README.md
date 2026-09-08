@@ -11,7 +11,7 @@ students/sXX/system/    学生唯一一份持续演化的系统
 students/sXX/weeks/     学生按周追加的报告与证据
 ```
 
-`sXX` 是教师分配的公开课程代号，例如 `s07`。学生只修改自己的 `students/sXX/**`；不要修改 `course/**`、`common/**`、其他学生目录、根 `.gitignore` 或仓库工作流。
+`sXX` 是教师分配的公开课程代号，例如 `s07`。学生只修改自己的 `students/sXX/**`；不要修改根 `README.md`、`course/**`、`common/**`、`students/README.md`、其他学生目录、根 `.gitignore` 或仓库工作流。
 
 ## W3 起点
 
