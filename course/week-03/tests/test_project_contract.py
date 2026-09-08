@@ -6,7 +6,7 @@ import subprocess
 import tomllib
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path.cwd().resolve()
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 

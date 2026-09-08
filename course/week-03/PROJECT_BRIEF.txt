@@ -3,7 +3,7 @@ W3 PROJECT BRIEF
 这是一个将持续到 W16 的课程项目，不是一次性练习。
 当前版本只解决一个问题：确认一份本地行情文件中有什么。
 
-请借助本地 Agent，把当前仓库补成一个由 uv 管理的最小 Python 项目。
+请借助本地 Agent，在自己的 students/sXX/system/ 中建立一个由 uv 管理的最小 Python 项目。sXX 是教师分配给你的公开课程代号。
 
 项目必须满足以下要求：
 
@@ -25,13 +25,14 @@ W3 PROJECT BRIEF
 
 6. 文件不存在或缺少必要字段时，清楚说明原因，以非零状态结束，
    并在输出中包含 DATA_CHECK=FAIL；不得猜测或伪造结果。
-7. 运行下面的命令时，教师提供的全部公开测试必须通过：
+7. 从自己的 system/ 目录运行下面的命令时，教师提供的全部公开测试必须通过：
 
-   uv run --locked pytest -q
+   uv run --locked pytest -q ../../../course/week-03/tests
 
-不要修改 PROJECT_BRIEF.txt、.gitignore、data/ 或教师提供的 tests/。
-你可以增加自己的测试，但本周不作要求。
+不要修改 course/、common/、根 .gitignore、students/README.md 或其他学生目录。
+你可以在自己的 system/ 中增加测试，但本周不作要求。
 
 本周只处理本地 fixture。不要联网，不要读取环境变量或凭证，
 也不要实现下载、策略、订单、账户、网页、数据库或未来功能的空壳。
 保持项目足够小，使初学者能够说明每个新增文件的职责。
+不要在自己的 system/ 之外生成项目文件或未来目录。
