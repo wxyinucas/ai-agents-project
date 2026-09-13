@@ -1,0 +1,22 @@
+{
+  "schema_version": "course.market-bars.v1",
+  "execution_mode": "replay",
+  "platform_called": false,
+  "source": "course_synthetic_fixture",
+  "account_mode": "not_applicable",
+  "private_note": "W4_PRIVATE_MARKER_2E4C",
+  "query": {
+    "symbol": "AAPL.US", "period": "day", "adjustment": "none",
+    "start_date": "2025-01-02", "end_date": "2025-01-10",
+    "market_timezone": "America/New_York"
+  },
+  "as_of": "2025-01-11T02:00:00Z",
+  "bars": [
+    {
+      "symbol": "AAPL.US", "session_date": "2025-01-02",
+      "market_timezone": "America/New_York", "event_time": "2025-01-02T05:00:00Z",
+      "available_at": "2025-01-11T02:00:00Z", "open": "100", "high": "103",
+      "low": "99", "volume": 1000
+    }
+  ]
+}

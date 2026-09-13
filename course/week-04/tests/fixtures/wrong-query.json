@@ -1,0 +1,14 @@
+{
+  "schema_version": "course.market-bars.v1",
+  "execution_mode": "replay",
+  "platform_called": false,
+  "source": "course_synthetic_fixture",
+  "account_mode": "not_applicable",
+  "query": {
+    "symbol": "MSFT.US", "period": "day", "adjustment": "none",
+    "start_date": "2025-01-02", "end_date": "2025-01-10",
+    "market_timezone": "America/New_York"
+  },
+  "as_of": "2025-01-11T02:00:00Z",
+  "bars": []
+}

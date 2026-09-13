@@ -1,0 +1,8 @@
+{
+  "symbol": "AAPL.US",
+  "period": "day",
+  "adjustment": "none",
+  "start_date": "2025-01-02",
+  "end_date": "2025-01-10",
+  "market_timezone": "America/New_York"
+}
