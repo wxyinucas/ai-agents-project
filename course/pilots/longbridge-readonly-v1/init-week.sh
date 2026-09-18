@@ -16,7 +16,7 @@ week_root="$student_root/weeks/week-04"
 
 if [[ ! -d "$system_root" || ! -f "$system_root/pyproject.toml" || ! -f "$system_root/uv.lock" ]]; then
   echo "尚未找到可继续的 W3 system：students/$student_id/system"
-  echo "请先完成 W3；若教师 W3 基线已公布，可保留原尝试后用它接续。"
+  echo "请先完成 W3 ACCEPT，或使用教师在 W3 结束后提供的恢复基线。"
   exit 1
 fi
 

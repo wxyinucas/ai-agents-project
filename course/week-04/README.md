@@ -1,47 +1,22 @@
-# W4｜真实行情成为可验证的数据
+# W4｜让程序留下两处足迹
 
-W3 让一份本地 CSV 能被程序读懂；W4 再向前一步：把来源不同的日线行情放进同一份课程数据合同，并用证据判断它是否可信。
+W3 的 `market-check` 已能报告本地 CSV 的可见事实。本周只增加可选的 `--trace`：程序处理输入路径和读入 CSV 时，向 `stderr` 留下两处追踪。追踪用于诊断，不改变原来的检查结果；数据仍是本地教学样例，不接 Longbridge。
 
-## 本目录中的文件
-
-- `PROJECT_BRIEF.txt`：学生交给 Agent 的完整自然语言契约；
-- `query.json`：本周唯一查询，教师取数工具与 replay 共用；
-- `data/synthetic-replay.json`：不联网也能完成课程的合成数据；
-- `tests/`：W3 回归测试与 W4 公开黑盒测试；
-- `report-template.md`：只记录证据与判断，不粘贴原始行情；
-- `init-week.sh`：在已有学生目录中建立 W4 报告。
-
-`synthetic-replay.json` 的价格和成交量均为教学用合成值，不是 AAPL 的历史行情。它只模拟真实取数工具应当交付的数据形状。
-
-本周也是 `common/` 第一次承载真实功能：公共包统一读取、验收、排序和计算摘要；每名学生只在自己的 `system/` 中接入一个很薄的命令入口。
-
-## 学生入口
-
-在仓库根目录运行一次：
+在仓库根目录建立本周报告：
 
 ```bash
 bash course/week-04/init-week.sh sXX
 ```
 
-然后进入自己的持续项目：
+然后进入自己的 `students/sXX/system/`，阅读 [`PROJECT_BRIEF.txt`](./PROJECT_BRIEF.txt)，让 Agent 只修改本人 `system/`。完成后运行：
 
 ```bash
-cd students/sXX/system
+uv run --locked market-check ../../../course/week-03/tests/fixtures/another_valid_prices.csv
+uv run --locked market-check ../../../course/week-03/tests/fixtures/another_valid_prices.csv --trace
+uv run --locked market-check ../../../course/week-03/tests/fixtures/missing_close.csv --trace
+uv run --locked pytest -q ../../../course/week-03/tests ../../../course/week-04/tests
 ```
 
-把 `../../../course/week-04/PROJECT_BRIEF.txt` 交给本地 Agent。完成后运行：
+第三条命令应该明确失败，但仍留下两处追踪；文件不存在时只会到达第一处。累计公开测试为 W3 的 5 项加 W4 的 3 项；本周不配置 CI/CD，也不要求提交 PR 或 tag。
 
-```bash
-uv run --locked market-observe ../../../course/week-04/data/synthetic-replay.json
-uv run --locked pytest -q ../../../course/week-04/tests
-```
-
-第二条命令已包含 W3 的五项回归检查；不需要再单独运行 W3 测试。
-
-## 安全边界
-
-学生程序只读取本地标准 JSON，不联网、不读取环境变量或剪贴板，也不安装 Longbridge SDK。平台注册、凭证和只读取数由教师提供的受信工具单独处理；它们不进入学生项目和公开证据。
-
-若真实平台临时不可用，使用 `synthetic-replay.json` 仍可取得完整的 W4 课程结果。`replay` 是明确记录的数据来源，不是假装调用过平台。
-
-合同检查能证明文档内部自洽，不能单独证明平台真的被调用；真实来源仍由受信取数边界和教师演示负责。
+W3 教师基线会在 W3 第三课时讨论后公布；W4 教师实现会在 W4 结束后公布，本周任务和公开测试不依赖它们。基线已公布且需要接续时，先保留个人旧版本的 Git 记录，检查迁入本人目录后的 diff，并在报告中写明来源。不要直接在教师区写个人作业。

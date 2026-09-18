@@ -1,0 +1,161 @@
+W4 PROJECT BRIEF
+
+你正在继续 W3 已经建立的 students/sXX/system/；不要另建第二个项目。
+如果 W3 尚未 ACCEPT，请先使用教师在 W3 结束后提供的恢复基线，再开始本任务。
+
+本周只解决一个问题：判断一份本地 JSON 是否满足课程行情合同，并输出可以公开的脱敏证据。
+不要在学生项目中连接 Longbridge 或任何网络服务，也不要读取、保存或请求 API Key、环境变量、剪贴板和账户信息。
+
+一、需要增加的命令
+
+先让现有 quant-lab 通过 uv 本地 path dependency 使用教师公共包。`pyproject.toml`
+使用下面的准确形状；若已有其他 dependency，保留后再增加 `course-common`：
+
+  [project]
+  dependencies = [
+      "pandas>=2.2,<3",
+      "course-common",
+  ]
+
+  [tool.uv.sources]
+  course-common = { path = "../../../common", editable = true }
+
+不要复制或修改 common 中的实现。学生项目的 dependencies 与 dependency-groups
+中都不得出现 longbridge 或 longport。
+
+然后在现有项目中注册下面的命令：
+
+  uv run --locked market-observe <JSON 文件路径>
+
+薄命令只需要：接收一个路径，调用 course_common.week04.observe_market_file()，
+逐行打印返回的 evidence_lines，并使用返回的 exit_code 退出。
+
+只能读取命令行给出的本地 JSON。不得修改输入文件，不得复制或持久化其中的原始 bars。
+
+二、课程合同
+
+顶层对象至少包含：
+
+  schema_version, execution_mode, platform_called, source,
+  account_mode, query, as_of, bars
+
+schema_version 必须为 course.market-bars.v1。
+
+本周 query 必须与 course/week-04/query.json 完全一致：
+
+  symbol=AAPL.US
+  period=day
+  adjustment=none
+  start_date=2025-01-02
+  end_date=2025-01-10
+  market_timezone=America/New_York
+
+只接受以下两组来源声明：
+
+  replay              / false / course_synthetic_fixture / not_applicable
+  longbridge_readonly / true  / longbridge                / paper
+
+四项依次对应 execution_mode、platform_called、source、account_mode。
+布尔值必须是真正的 JSON boolean，不接受字符串 "true" 或 "false"。
+
+as_of 以及每个 bar 的 event_time、available_at 都必须是以 Z 结尾的 RFC3339 UTC 时间。
+as_of 是实际取得这份快照的 UTC 时刻；available_at 表示“本次快照中最迟确认已经可用”的上界，
+不推断供应商最早发布该 bar 的时刻。本周真实取数和合成 replay 都令所有
+available_at == as_of。美国日线的 event_time 使用该交易日在 America/New_York
+的零点，再换算成 UTC。
+bars 必须为非空列表。每个 bar 至少包含：
+
+  symbol, session_date, market_timezone, event_time, available_at,
+  open, high, low, close, volume
+
+其中：
+
+1. symbol 和 market_timezone 必须与 query 一致；
+2. session_date 必须是 event_time 换算到 America/New_York 后的自然日；
+3. session_date 必须落在 query 的 start 与 end 之间；
+4. event_time <= available_at，且本周每条 available_at == as_of；
+5. open、high、low、close 必须是正的十进制字符串；volume 必须是 JSON 非负整数；
+6. high 不小于 open、low、close，low 不大于 open、high、close；
+7. (symbol, event_time) 不得重复。
+
+这个固定窗口必须恰好覆盖六个交易日：2025-01-02、01-03、01-06、01-07、
+01-08、01-10；01-09 不应出现在结果中。
+
+顶层对象和每个 bar 可以有普通的额外字段；程序忽略它们，不输出它们，也不把它们纳入
+data_sha256。但任何层级的字段名只要在忽略大小写与连字符差异后含有 token、secret、
+password、api_key、app_key 或 account_id，就必须立即以 sensitive_field 拒绝，且不得回显字段名或值。
+
+三、排序与稳定摘要
+
+输入 bars 可以乱序。先按 (symbol, event_time) 排序，再检查和计算证据。
+
+十进制值先转换为普通十进制写法并删除无意义的末尾 0：
+
+  100.00 -> 100
+  101.2500 -> 101.25
+  -0 -> 0
+
+data_sha256 的输入只包含：
+
+1. query 的六个固定字段；
+2. 排序后的 bars；每条只保留 symbol、session_date、market_timezone、
+   event_time、open、high、low、close、volume；只对 OHLC 使用上面的十进制规范化，
+   volume 保持为 JSON 整数。
+
+把这个对象序列化为 UTF-8 JSON：键按字母排序，分隔符使用 ',' 和 ':'，不增加空格，
+然后计算小写 SHA-256 十六进制摘要。
+
+因此，bars 的原始顺序、as_of、available_at、execution_mode、platform_called、
+source、account_mode 或额外字段发生变化时，只要查询与业务 bar 值相同，data_sha256 就不变。
+
+四、成功输出
+
+验收成功时退出状态为 0，只输出适合公开的 key=value 行，至少包括：
+
+  schema_version=course.market-bars.v1
+  execution_mode=<replay 或 longbridge_readonly>
+  platform_called=<true 或 false>
+  source=<course_synthetic_fixture 或 longbridge>
+  account_mode=<not_applicable 或 paper>
+  symbol=AAPL.US
+  period=day
+  adjustment=none
+  market_timezone=America/New_York
+  query_start_date=2025-01-02
+  query_end_date=2025-01-10
+  as_of=<输入中的 UTC 时间>
+  rows=<bar 数量>
+  first_session=<排序后的最早 session_date>
+  last_session=<排序后的最晚 session_date>
+  data_sha256=<64 位小写十六进制摘要>
+  MARKET_CONTRACT=PASS
+
+不要输出原始 bars、完整输入对象、文件内容、凭证、环境变量或额外字段。
+
+五、失败输出
+
+任何失败都必须以非零状态结束，不打印 traceback，不回显输入值、文件路径或文件内容，只输出：
+
+  reason_code=<安全的固定代码>
+  MARKET_CONTRACT=FAIL
+
+按失败原因使用下面的代码：
+
+  file_not_found, invalid_json, invalid_schema, invalid_query,
+  missing_field, invalid_value, duplicate_bar, ohlc_violation,
+  time_boundary, session_coverage, mode_source_conflict, sensitive_field
+
+如果一份输入同时有多个问题，只需报告程序首先发现的一个固定代码。
+
+六、验收
+
+从自己的 students/sXX/system/ 运行：
+
+  uv run --locked market-observe ../../../course/week-04/data/synthetic-replay.json
+  uv run --locked pytest -q ../../../course/week-04/tests
+
+第二条命令同时执行 W3 五项回归检查。不得为了通过 W4 而破坏 market-check。
+
+不要修改根 README.md、course/、common/、根 .gitignore、students/README.md 或其他学生目录。
+可以在自己的 system/ 中增加测试，但不要增加 Longbridge SDK、网络客户端、凭证处理、策略、订单或未来功能空壳。
+合同只能判断输入内部是否自洽，不能单独证明平台真的被调用；不要扩大证据结论。

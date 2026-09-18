@@ -1,4 +1,4 @@
-"""Read and verify the small market-data contract introduced in W4."""
+"""Historical Longbridge data-contract pilot; not the current W4 exercise."""
 
 from __future__ import annotations
 
